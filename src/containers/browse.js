@@ -6,6 +6,7 @@ import logo from "../logo.svg";
 import { FirebaseContext } from "../context/firebase";
 import { SelectProfileContainer } from "./profiles";
 import { FooterContainer } from "./footer";
+import { getAuth } from "firebase/auth";
 
 export function BrowseContainer({ slides }) {
   const [category, setCategory] = useState("series");
@@ -14,8 +15,9 @@ export function BrowseContainer({ slides }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [slideRows, setSlideRows] = useState([]);
 
-  const { firebase } = useContext(FirebaseContext);
-  const user = firebase.auth().currentUser || {};
+  const { firebaseApp } = useContext(FirebaseContext);
+  const auth = getAuth(firebaseApp);
+  const user = auth.currentUser || {};
 
   useEffect(() => {
     setTimeout(() => {
@@ -27,23 +29,9 @@ export function BrowseContainer({ slides }) {
     setSlideRows(slides[category]);
   }, [slides, category]);
 
-  useEffect(() => {
-    const fuse = new Fuse(slideRows, {
-      keys: ["data.description", "data.title", "data.genre"],
-    });
-    const results = fuse.search(searchTerm).map(({ item }) => item);
-
-    if (slideRows.length > 0 && searchTerm.length > 3 && results.length > 0) {
-      setSlideRows(results);
-    } else {
-      setSlideRows(slides[category]);
-    }
-  }, [searchTerm]);
-
-  return profile.displayName ? (
+  return (
     <>
       {loading ? <Loading src={user.photoURL} /> : <Loading.ReleaseBody />}
-
       <Header src="joker1" dontShowOnSmallViewPort>
         <Header.Frame>
           <Header.Group>
@@ -74,7 +62,7 @@ export function BrowseContainer({ slides }) {
                   <Header.TextLink>{user.displayName}</Header.TextLink>
                 </Header.Group>
                 <Header.Group>
-                  <Header.TextLink onClick={() => firebase.auth().signOut()}>
+                  <Header.TextLink onClick={() => auth.signOut()}>
                     Sign out
                   </Header.TextLink>
                 </Header.Group>
@@ -82,7 +70,6 @@ export function BrowseContainer({ slides }) {
             </Header.Profile>
           </Header.Group>
         </Header.Frame>
-
         <Header.Feature>
           <Header.FeatureCallOut>Watch Joker Now</Header.FeatureCallOut>
           <Header.Text>
@@ -95,7 +82,6 @@ export function BrowseContainer({ slides }) {
           <Header.PlayButton>Play</Header.PlayButton>
         </Header.Feature>
       </Header>
-
       <Card.Group>
         {slideRows.map((slideItem) => (
           <Card key={`${category}-${slideItem.title.toLowerCase()}`}>
@@ -124,7 +110,5 @@ export function BrowseContainer({ slides }) {
       </Card.Group>
       <FooterContainer />
     </>
-  ) : (
-    <SelectProfileContainer user={user} setProfile={setProfile} />
   );
 }
