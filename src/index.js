@@ -1,6 +1,17 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
-import App from "./app.js"; // Might need to be lowercased
+import { render } from "react-dom";
+import "normalize.css";
+import { GlobalStyles } from "./global-styles";
+import { App } from "./App";
+import { firebase } from "./lib/firebase.prod";
+import { FirebaseContext } from "./context/firebase";
 
-const root = createRoot(document.getElementById("root"));
-root.render(<App />);
+render(
+  <React.StrictMode>
+    <FirebaseContext.Provider value={{ firebase }}>
+      <GlobalStyles />
+      <App />
+    </FirebaseContext.Provider>
+  </React.StrictMode>,
+  document.getElementById("root")
+);
