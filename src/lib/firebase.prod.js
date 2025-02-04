@@ -3,7 +3,7 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 // 1) when seeding the database you'll have to uncomment this!
-//import { seedDatabase } from "../seed";
+import { seedDatabase } from "../seed";
 
 const config = {
   apiKey: "AIzaSyCzCW0onfs504HYrzFD3T1NjzDYut9qipY",
@@ -20,7 +20,7 @@ const firestore = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
 
 // 2) when seeding the database you'll have to uncomment this!
-//seedDatabase({ firestore });
+seedDatabase({ firestore });
 // 3) once you have populated the database (only run once!), re-comment this so you don't get duplicate data
 
 export { firebaseApp, firestore, auth };
